@@ -1,0 +1,15 @@
+:root {
+  /* Marca (Logo) */
+  --rosa-logo: #F06292;        /* Rosa principal del círculo */
+  --amarillo-logo: #FFEB3B;    /* Amarillo/Oro del texto */
+  --blanco-lirio: #FFFFFF;     /* Blanco de la flor y contornos */
+
+  /* Colores de Moodboard (Verde y Naranja) */
+  --verde-esmeralda: #2E5A36;  /* Verde profundo orgánico */
+  --verde-claro: #88B04B;      /* Verde oliva/hoja fresco */
+  --naranja-sol: #FF7043;      /* Naranja cálido sunset */
+
+  /* Textos y Sombras */
+  --texto-oscuro: #1F2937;
+  --sombra-suave: rgba(0, 0, 0, 0.08);
+}

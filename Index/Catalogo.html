@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Catálogo | OhMyShaii</title>
+    <link rel="icon" type="image/jpeg" href="../assets/logotipo.jpeg">
+    <link rel="stylesheet" href="../Css/variables.css"> 
+    <link rel="stylesheet" href="../Css/styles.css">
+</head>
+<body>
+
+    <!-- Header / Navbar -->
+    <header class="header">
+        <div class="logo">
+            <a href="Index.html">OhMyShaii</a>
+        </div>
+        <nav class="nav-bar">
+            <ul class="nav-link">
+                <li><a href="Index.html">Inicio</a></li>
+                <li><a href="Catalogo.html" class="active">Catálogo</a></li>
+                <li><a href="Contacto.html">Contacto</a></li>
+                <li><a href="Servicios.html">Servicios</a></li>
+            </ul>
+        </nav>
+        <div class="nav-cta">
+            <a href="Contacto.html">Contáctanos</a>
+        </div>
+    </header>
+
+    <!-- Sección Catálogo -->
+    <main class="catalogo-section">
+        <div class="titulo-seccion">
+            <h2>Nuestro Trabajo</h2>
+            <p>Explora la galería de nuestras creaciones en Uñas, Cejas y Pestañas</p>
+        </div>
+
+        <!-- Botones para filtrar por Álbum -->
+        <div class="album-tabs">
+            <button class="tab-btn active" onclick="filtrarAlbum('todas')">Ver Todo</button>
+            <button class="tab-btn" onclick="filtrarAlbum('unas')">Uñas</button>
+            <button class="tab-btn" onclick="filtrarAlbum('cejas')">Cejas</button>
+            <button class="tab-btn" onclick="filtrarAlbum('pestanas')">Pestañas</button>
+        </div>
+
+        <!-- Galería de Fotos -->
+        <div class="galeria-grid">
+            <!-- Uñas -->
+            <div class="galeria-item unas" onclick="abrirLightbox(this)">
+                <img src="../assets/WhatsApp Image 2026-09-01 at 9.06.03 PM.jpeg" alt="Diseño de Uñas 1">
+                <div class="overlay"><span>Uñas</span></div>
+            </div>
+            <div class="galeria-item unas" onclick="abrirLightbox(this)">
+                <img src="../assets/4.jpeg" alt="Diseño de Uñas 2">
+                <div class="overlay"><span>Uñas</span></div>
+            </div>
+            <div class="galeria-item unas" onclick="abrirLightbox(this)">
+                <img src="../assets/5.jpeg" alt="Diseño de Uñas 2">
+                <div class="overlay"><span>Uñas</span></div>
+            </div>
+            <div class="galeria-item unas" onclick="abrirLightbox(this)">
+                <img src="../assets/6.jpeg" alt="Diseño de Uñas 2">
+                <div class="overlay"><span>Uñas</span></div>
+            </div>
+            <div class="galeria-item unas" onclick="abrirLightbox(this)">
+                <img src="../assets/7.jpeg" alt="Diseño de Uñas 2">
+                <div class="overlay"><span>Uñas</span></div>
+            </div>
+
+            <!-- Cejas -->
+            <div class="galeria-item cejas" onclick="abrirLightbox(this)">
+                <img src="../assets/cejas 1.png" alt="Diseño de Cejas 1">
+                <div class="overlay"><span>Cejas</span></div>
+            </div>
+            <div class="galeria-item cejas" onclick="abrirLightbox(this)">
+                <img src="../assets/cejas 2.png" alt="Diseño de Cejas 2">
+                <div class="overlay"><span>Cejas</span></div>
+            </div>
+
+            <!-- Pestañas -->
+            <div class="galeria-item pestanas" onclick="abrirLightbox(this)">
+                <img src="../assets/pestañas 1.png" alt="Diseño de Pestañas 1">
+                <div class="overlay"><span>Pestañas</span></div>
+            </div>
+            <div class="galeria-item pestanas" onclick="abrirLightbox(this)">
+                <img src="../assets/pestañas 2.png" alt="Diseño de Pestañas 2">
+                <div class="overlay"><span>Pestañas</span></div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Modal Lightbox (Visor de fotos ampliada) -->
+    <div id="lightbox" class="lightbox" onclick="cerrarLightbox()">
+        <span class="cerrar">&times;</span>
+        <img class="lightbox-contenido" id="img-ampliada">
+        <div id="caption"></div>
+    </div>
+
+    <!-- Script en línea para interactividad rápida -->
+    <script>
+        // Filtrar imágenes por tipo de álbum
+        function filtrarAlbum(categoria) {
+            const botones = document.querySelectorAll('.tab-btn');
+            const items = document.querySelectorAll('.galeria-item');
+
+            botones.forEach(btn => btn.classList.remove('active'));
+            event.target.classList.add('active');
+
+            items.forEach(item => {
+                if (categoria === 'todas' || item.classList.contains(categoria)) {
+                    item.style.display = 'block';
+                } else {
+                    item.style.display = 'none';
+                }
+            });
+        }
+
+        // Abrir visor de imagen a tamaño completo
+        function abrirLightbox(elemento) {
+            const modal = document.getElementById('lightbox');
+            const imgAmpliada = document.getElementById('img-ampliada');
+            const captionText = document.getElementById('caption');
+            const imagenOriginal = elemento.querySelector('img');
+
+            modal.style.display = 'flex';
+            imgAmpliada.src = imagenOriginal.src;
+            captionText.innerHTML = imagenOriginal.alt;
+        }
+
+        // Cerrar visor
+        function cerrarLightbox() {
+            document.getElementById('lightbox').style.display = 'none';
+        }
+    </script>
+</body>
+</html>
