@@ -634,3 +634,16 @@ body {
 .contacto-info li {
   font-size: 0.98rem;
 }
+/* --- HERO SECTION --- */
+.hero {
+  /* Apunta a la carpeta assets/ subiendo un nivel con ../ */
+  background: linear-gradient(rgba(27, 58, 36, 0.75), rgba(0, 0, 0, 0.65)), url('../assets/logotipo_2.jpeg') center/cover no-repeat;
+  height: 75vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  color: var(--blanco-lirio);
+  padding: 0 1rem;
+  margin-bottom: 2rem;
+}
