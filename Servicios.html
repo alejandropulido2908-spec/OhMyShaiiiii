@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="es">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Servicios</title>
+    <title>Servicios | OhMyShaii</title>
     <link rel="stylesheet" href="../Css/variables.css"> 
     <link rel="stylesheet" href="../Css/styles.css">
 </head>
@@ -12,60 +12,70 @@
         <div class="logo">
             <a href="Index.html">OhMyShaii</a>
         </div>
+
+        <!-- Checkbox oculto para menú responsive -->
+        <input type="checkbox" id="menu-toggle" class="menu-checkbox">
+        
+        <!-- Botón menú hamburguesa -->
+        <label for="menu-toggle" class="menu-btn">
+            <span></span>
+            <span></span>
+            <span></span>
+        </label>
+
         <nav class="nav-bar">
             <ul class="nav-link">
                 <li><a href="Index.html">Inicio</a></li>
-                <li><a href="Catalogo.html" class="active">Catálogo</a></li>
+                <li><a href="Catalogo.html">Catálogo</a></li>
                 <li><a href="Contacto.html">Contacto</a></li>
-                <li><a href="Servicios.html">Servicios</a></li>
+                <li><a href="Servicios.html" class="active">Servicios</a></li>
             </ul>
+            <div class="nav-cta">
+                <a href="Contacto.html">Contáctanos</a>
+            </div>
         </nav>
-        <div class="nav-cta">
-            <a href="Contacto.html">Contáctanos</a>
-        </div>
     </header>
 
-
     <section class="Servicios">
-    <div class="titulo-seccion">
-        <h2>Nuestro Servicios</h2>
-        <p>Resalta tu belleza nataural con nuestros servicios tratamientos especializados</p>
-    </div>
+        <div class="titulo-seccion">
+            <h2>Nuestros Servicios</h2>
+            <p>Resalta tu belleza natural con nuestros tratamientos especializados</p>
+        </div>
 
-    <div class="servicios-container">
-        <article class="servicios-card">
-            <div class="servicio-img">
-                <img src="../assets/1.png" alt="Servicios de Uñas OhMyShaii">
-            </div>
-            <div class="servicio-info">
-                <h3>Uñas</h3>
-                <p>Manicura Rusa, uñas esculpidas, sistema en gel, acrílico y diseños personalizables (Nail Art).</p>
-                <a href="Contacto.html" class="btn-servicio">Agendar Cita de Uñas</a>
-            </div>
-        </article>
-         
-        <article class="servicios-card">
-            <div class="servicio-img">
-                <img src="../assets/2.png" alt="Servicios de Uñas OhMyShaii">
-            </div>
-            <div class="servicio-info">
-                <h3>Pestañas</h3>
-                <p>Lifting de pestañas con tinte y extensiones pelo a pelo o volumen para potenciar tu mirada.</p>
-                <a href="Contacto.html" class="btn-servicio">Agendar Pestañas</a>
-            </div>
-        </article>
+        <div class="servicios-container">
+            <article class="servicios-card">
+                <div class="servicio-img">
+                    <img src="../assets/1.png" alt="Servicios de Uñas OhMyShaii">
+                </div>
+                <div class="servicio-info">
+                    <h3>Uñas</h3>
+                    <p>Manicura Rusa, uñas esculpidas, sistema en gel, acrílico y diseños personalizables (Nail Art).</p>
+                    <a href="Contacto.html" class="btn-servicio">Agendar Cita de Uñas</a>
+                </div>
+            </article>
+             
+            <article class="servicios-card">
+                <div class="servicio-img">
+                    <img src="../assets/2.png" alt="Servicios de Pestañas OhMyShaii">
+                </div>
+                <div class="servicio-info">
+                    <h3>Pestañas</h3>
+                    <p>Lifting de pestañas con tinte y extensiones pelo a pelo o volumen para potenciar tu mirada.</p>
+                    <a href="Contacto.html" class="btn-servicio">Agendar Pestañas</a>
+                </div>
+            </article>
 
-         <article class="servicios-card">
-            <div class="servicio-img">
-                <img src="../assets/3.png" alt="Servicios de Uñas OhMyShaii">
-            </div>
-            <div class="servicio-info">
-                <h3>Cejas</h3>
-                <p>Diseño y perfilado de cejas, laminado (Brow Lamination) y pigmentación con Henna para una mirada definida.</p>
-                <a href="Contacto.html" class="btn-servicio">Agendar Cita de Cejas</a>
-            </div>
-        </article>
-    </div>
-</section>
+            <article class="servicios-card">
+                <div class="servicio-img">
+                    <img src="../assets/3.png" alt="Servicios de Cejas OhMyShaii">
+                </div>
+                <div class="servicio-info">
+                    <h3>Cejas</h3>
+                    <p>Diseño y perfilado de cejas, laminado (Brow Lamination) y pigmentación con Henna para una mirada definida.</p>
+                    <a href="Contacto.html" class="btn-servicio">Agendar Cita de Cejas</a>
+                </div>
+            </article>
+        </div>
+    </section>
 </body>
 </html>
