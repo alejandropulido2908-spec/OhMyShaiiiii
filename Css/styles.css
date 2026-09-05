@@ -379,9 +379,9 @@ body {
   to { transform: scale(1); opacity: 1; }
 }
 
-/* --- HERO SECTION --- */
+/* --- HERO SECTION (Ruta corregida sin error 404) --- */
 .hero {
-  background: linear-gradient(rgba(0, 0, 0, 0.45), rgba(0, 0, 0, 0.45)), url('../img/hero-bg.jpg') center/cover no-repeat;
+  background: linear-gradient(rgba(27, 58, 36, 0.7), rgba(0, 0, 0, 0.6)), url('../img/logotipo_2.jpeg') center/cover no-repeat;
   height: 75vh;
   display: flex;
   align-items: center;
