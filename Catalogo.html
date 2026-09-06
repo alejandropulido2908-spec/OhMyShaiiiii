@@ -141,7 +141,27 @@
 
         <!-- Galería de Fotos -->
         <div class="galeria-grid" id="galeria-grid">
-            <!-- Las fotos dinámicas subidas a Firebase se cargarán aquí -->
+            <!-- Fotos base fijas -->
+            <div class="galeria-item unas">
+                <button class="btn-eliminar" onclick="eliminarFotoElemento(this.parentElement)">✖</button>
+                <img src="../assets/WhatsApp Image 2026-09-01 at 9.06.03 PM.jpeg" alt="Diseño de Uñas 1" onclick="abrirLightbox(this.parentElement)">
+                <div class="overlay"><span>Uñas</span></div>
+            </div>
+            <div class="galeria-item unas">
+                <button class="btn-eliminar" onclick="eliminarFotoElemento(this.parentElement)">✖</button>
+                <img src="../assets/4.jpeg" alt="Diseño de Uñas 2" onclick="abrirLightbox(this.parentElement)">
+                <div class="overlay"><span>Uñas</span></div>
+            </div>
+            <div class="galeria-item cejas">
+                <button class="btn-eliminar" onclick="eliminarFotoElemento(this.parentElement)">✖</button>
+                <img src="../assets/cejas 1.png" alt="Diseño de Cejas 1" onclick="abrirLightbox(this.parentElement)">
+                <div class="overlay"><span>Cejas</span></div>
+            </div>
+            <div class="galeria-item pestanas">
+                <button class="btn-eliminar" onclick="eliminarFotoElemento(this.parentElement)">✖</button>
+                <img src="../assets/pestañas 1.png" alt="Diseño de Pestañas 1" onclick="abrirLightbox(this.parentElement)">
+                <div class="overlay"><span>Pestañas</span></div>
+            </div>
         </div>
     </main>
 
@@ -165,13 +185,12 @@
         </div>
     </div>
 
-    <!-- MODULO DE FIREBASE (Uso CDN directo para HTML/JS puro) -->
+    <!-- Módulo de Firebase -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
         import { getFirestore, collection, addDoc, getDocs, deleteDoc, doc, query, orderBy } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
         import { getStorage, ref, uploadBytes, getDownloadURL, deleteObject } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-storage.js";
 
-        // Tu configuración real de Firebase
         const firebaseConfig = {
             apiKey: "AIzaSyCvCqmdL5T1enDMTBezHlwwPwjJjQGn2Oc",
             authDomain: "ohmyshaii.firebaseapp.com",
@@ -182,32 +201,26 @@
             measurementId: "G-0H4XR10YZ7"
         };
 
-        // Inicializar Firebase
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
         const storage = getStorage(app);
 
-        // Cargar fotos guardadas en Firebase al abrir la página
         window.addEventListener('DOMContentLoaded', cargarFotosFirebase);
 
         async function cargarFotosFirebase() {
-            const galeria = document.getElementById('galeria-grid');
-            galeria.innerHTML = '';
-            
             try {
                 const q = query(collection(db, "catalogo"), orderBy("fecha", "desc"));
                 const querySnapshot = await getDocs(q);
                 
                 querySnapshot.forEach((docSnap) => {
                     const data = docSnap.data();
-                    renderizarFoto(data.url, data.categoria, data.descripcion, docSnap.id, data.storagePath);
+                    renderizarFotoFirebase(data.url, data.categoria, data.descripcion, docSnap.id, data.storagePath);
                 });
             } catch (error) {
-                console.error("Error al cargar fotos de Firebase:", error);
+                console.error("Error al cargar desde Firebase:", error);
             }
         }
 
-        // Subir foto a Firebase Storage + Firestore
         document.getElementById('form-subir-foto').addEventListener('submit', async function(e) {
             e.preventDefault();
             
@@ -224,13 +237,11 @@
                 loader.style.display = 'block';
                 btnPublicar.disabled = true;
 
-                // 1. Subir imagen física a Storage
                 const storagePath = `catalogo/${Date.now()}_${archivo.name}`;
                 const storageRef = ref(storage, storagePath);
                 await uploadBytes(storageRef, archivo);
                 const downloadURL = await getDownloadURL(storageRef);
 
-                // 2. Registrar datos en Firestore
                 const docRef = await addDoc(collection(db, "catalogo"), {
                     url: downloadURL,
                     categoria: categoria,
@@ -239,25 +250,24 @@
                     fecha: new Date()
                 });
 
-                // 3. Mostrar en pantalla al inicio
-                renderizarFoto(downloadURL, categoria, descripcion, docRef.id, storagePath, true);
+                renderizarFotoFirebase(downloadURL, categoria, descripcion, docRef.id, storagePath, true);
 
-                alert('¡Foto publicada y guardada en la nube con éxito!');
+                alert('¡Foto publicada y guardada con éxito!');
                 document.getElementById('form-subir-foto').reset();
             } catch (error) {
                 console.error("Error al subir:", error);
-                alert("Ocurrió un error al subir la foto. Revisa las Reglas de Firebase Storage/Firestore.");
+                alert("Error al subir la imagen a la nube.");
             } finally {
                 loader.style.display = 'none';
                 btnPublicar.disabled = false;
             }
         });
 
-        // Crear la tarjeta HTML en la galería
-        function renderizarFoto(src, categoria, descripcion, id, storagePath, alInicio = false) {
+        function renderizarFotoFirebase(src, categoria, descripcion, id, storagePath, alInicio = false) {
             const nuevaTarjeta = document.createElement('div');
             nuevaTarjeta.className = `galeria-item ${categoria}`;
-            if (id) nuevaTarjeta.dataset.id = id;
+            nuevaTarjeta.dataset.id = id;
+            nuevaTarjeta.dataset.path = storagePath;
 
             nuevaTarjeta.innerHTML = `
                 <button class="btn-eliminar">✖</button>
@@ -265,12 +275,10 @@
                 <div class="overlay"><span>${categoria.charAt(0).toUpperCase() + categoria.slice(1)}</span></div>
             `;
 
-            // Vincular evento eliminar a Firebase
             nuevaTarjeta.querySelector('.btn-eliminar').addEventListener('click', () => {
-                eliminarFoto(doc(db, "catalogo", id), storagePath, nuevaTarjeta);
+                eliminarFotoFirebase(doc(db, "catalogo", id), storagePath, nuevaTarjeta);
             });
 
-            // Visor Lightbox
             nuevaTarjeta.querySelector('img').addEventListener('click', () => abrirLightbox(nuevaTarjeta));
 
             const galeria = document.getElementById('galeria-grid');
@@ -281,8 +289,7 @@
             }
         }
 
-        // Eliminar foto de Firestore y Storage
-        async function eliminarFoto(docRef, storagePath, tarjetaElem) {
+        async function eliminarFotoFirebase(docRef, storagePath, tarjetaElem) {
             if (confirm('¿Estás seguro de que deseas eliminar esta imagen?')) {
                 try {
                     await deleteDoc(docRef);
@@ -291,17 +298,23 @@
                         await deleteObject(fileRef);
                     }
                     tarjetaElem.remove();
-                    alert('Imagen eliminada correctamente.');
+                    alert('Imagen eliminada.');
                 } catch (error) {
-                    console.error("Error al borrar:", error);
-                    alert("No se pudo eliminar la imagen.");
+                    console.error("Error al eliminar:", error);
                 }
             }
         }
     </script>
 
-    <!-- SCRIPT DE INTERFAZ (LOGIN, MODALES, FILTROS) -->
+    <!-- Scripts de Interfaz y Control -->
     <script>
+        // --- Eliminar elementos estáticos locales ---
+        function eliminarFotoElemento(tarjeta) {
+            if (confirm('¿Estás seguro de que deseas eliminar esta imagen?')) {
+                tarjeta.remove();
+            }
+        }
+
         // --- Detección de 3 Clics rápidos ---
         let clicsLogo = 0;
         let timerClics;
