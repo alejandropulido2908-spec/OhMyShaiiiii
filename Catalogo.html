@@ -61,7 +61,7 @@
             box-shadow: 0 2px 5px rgba(0,0,0,0.2);
         }
         .modo-admin .btn-eliminar {
-            display: block;
+            display: block !important;
         }
         .galeria-item {
             position: relative;
@@ -212,7 +212,7 @@
             });
         });
 
-        // Subida mediante Evento Click directo (Evita recargas de navegador)
+        // Subida mediante Evento Click directo
         document.getElementById('btn-publicar').addEventListener('click', async function() {
             const archivoInput = document.getElementById('input-foto');
             const categoriaInput = document.getElementById('select-categoria');
@@ -244,7 +244,6 @@
 
                 alert('¡Foto subida con éxito!');
                 
-                // Limpiar campos
                 archivoInput.value = '';
                 descripcionInput.value = '';
                 categoriaInput.value = '';
@@ -260,12 +259,19 @@
 
         function procesarImagen(file) {
             return new Promise((resolve, reject) => {
+                if (!file) {
+                    reject(new Error("No se seleccionó ningún archivo."));
+                    return;
+                }
+
                 const reader = new FileReader();
-                reader.onload = (e) => {
+                
+                reader.onload = (event) => {
                     const img = new Image();
+                    
                     img.onload = () => {
                         const canvas = document.createElement('canvas');
-                        const MAX_WIDTH = 450; // Redimensionado optimizado para peso liviano en móvil
+                        const MAX_WIDTH = 500;
                         let width = img.width;
                         let height = img.height;
 
@@ -280,17 +286,21 @@
                         const ctx = canvas.getContext('2d');
                         ctx.drawImage(img, 0, 0, width, height);
 
-                        resolve(canvas.toDataURL('image/jpeg', 0.4));
+                        const dataURL = canvas.toDataURL('image/jpeg', 0.5);
+                        resolve(dataURL);
                     };
-                    img.onerror = () => reject(new Error("No se pudo cargar la imagen seleccionada."));
-                    img.src = e.target.result;
+
+                    img.onerror = () => reject(new Error("Error al procesar la imagen seleccionada."));
+                    img.src = event.target.result;
                 };
-                reader.onerror = () => reject(new Error("Error leyendo archivo."));
+
+                reader.onerror = () => reject(new Error("Error al leer el archivo."));
                 reader.readAsDataURL(file);
             });
         }
 
         function renderizarFotoFirebase(src, categoria, descripcion, id) {
+            const galeria = document.getElementById('galeria-grid');
             const nuevaTarjeta = document.createElement('div');
             nuevaTarjeta.className = `galeria-item ${categoria} item-firebase`;
             nuevaTarjeta.dataset.id = id;
@@ -307,11 +317,11 @@
                         await deleteDoc(doc(db, "galeria", id));
                     } catch (err) {
                         console.error("Error al borrar:", err);
+                        alert("Error al eliminar de la base de datos: " + err.message);
                     }
                 }
             });
 
-            const galeria = document.getElementById('galeria-grid');
             galeria.appendChild(nuevaTarjeta);
         }
     </script>
