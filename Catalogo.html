@@ -7,7 +7,6 @@
     <link rel="stylesheet" href="../Css/variables.css"> 
     <link rel="stylesheet" href="../Css/styles.css">
     <style>
-        /* Estilos para Modales y Panel de Administración */
         .admin-modal {
             display: none;
             position: fixed;
@@ -66,6 +65,12 @@
         .galeria-item {
             position: relative;
         }
+        .loader {
+            display: none;
+            color: #d97706;
+            font-weight: bold;
+            margin-top: 10px;
+        }
     </style>
 </head>
 <body>
@@ -108,7 +113,7 @@
         <!-- PANEL DE SUBIDA PARA LA DUEÑA / DEV -->
         <section id="panel-admin" class="panel-admin">
             <h3 id="panel-titulo">👑 Panel de Gestión</h3>
-            <p>Sube contenido o elimina fotos existentes haciendo clic en el botón (✖) de cada tarjeta.</p>
+            <p>Sube fotos ilimitadas o elimina haciendo clic en la (✖) de cada imagen.</p>
             
             <form id="form-subir-foto">
                 <input type="file" id="input-foto" accept="image/*" required>
@@ -119,7 +124,8 @@
                     <option value="pestanas">Pestañas</option>
                 </select>
                 <input type="text" id="input-descripcion" placeholder="Descripción de la imagen" required>
-                <button type="submit" class="tab-btn active" style="margin-top: 10px; cursor: pointer; border:none; padding:10px 20px;">Publicar Imagen</button>
+                <button type="submit" id="btn-publicar" class="tab-btn active" style="margin-top: 10px; cursor: pointer; border:none; padding:10px 20px;">Publicar Imagen</button>
+                <div id="loader" class="loader">Subiendo imagen a la nube... ⏳</div>
             </form>
             <button onclick="cerrarSesion()" style="margin-top:15px; background:transparent; border:none; color:#d97706; cursor:pointer; text-decoration:underline;">Cerrar Sesión</button>
         </section>
@@ -134,27 +140,7 @@
 
         <!-- Galería de Fotos -->
         <div class="galeria-grid" id="galeria-grid">
-            <!-- Fotos base fijas -->
-            <div class="galeria-item unas">
-                <button class="btn-eliminar" onclick="eliminarFoto(this)">✖</button>
-                <img src="../assets/WhatsApp Image 2026-09-01 at 9.06.03 PM.jpeg" alt="Diseño de Uñas 1" onclick="abrirLightbox(this.parentElement)">
-                <div class="overlay"><span>Uñas</span></div>
-            </div>
-            <div class="galeria-item unas">
-                <button class="btn-eliminar" onclick="eliminarFoto(this)">✖</button>
-                <img src="../assets/4.jpeg" alt="Diseño de Uñas 2" onclick="abrirLightbox(this.parentElement)">
-                <div class="overlay"><span>Uñas</span></div>
-            </div>
-            <div class="galeria-item cejas">
-                <button class="btn-eliminar" onclick="eliminarFoto(this)">✖</button>
-                <img src="../assets/cejas 1.png" alt="Diseño de Cejas 1" onclick="abrirLightbox(this.parentElement)">
-                <div class="overlay"><span>Cejas</span></div>
-            </div>
-            <div class="galeria-item pestanas">
-                <button class="btn-eliminar" onclick="eliminarFoto(this)">✖</button>
-                <img src="../assets/pestañas 1.png" alt="Diseño de Pestañas 1" onclick="abrirLightbox(this.parentElement)">
-                <div class="overlay"><span>Pestañas</span></div>
-            </div>
+            <!-- Las fotos cargadas desde Firebase aparecerán aquí automáticamente -->
         </div>
     </main>
 
@@ -178,18 +164,140 @@
         </div>
     </div>
 
-    <script>
-        // --- Cargar Fotos desde localStorage al iniciar la página ---
-        document.addEventListener('DOMContentLoaded', cargarFotosGuardadas);
+    <!-- SDKs de Firebase Modular vía CDN (Sin necesidad de NPM) -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+        import { getFirestore, collection, addDoc, getDocs, deleteDoc, doc, query, orderBy } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+        import { getStorage, ref, uploadBytes, getDownloadURL, deleteObject } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-storage.js";
 
-        function cargarFotosGuardadas() {
-            const fotosGuardadas = JSON.parse(localStorage.getItem('galeria_shaii')) || [];
-            fotosGuardadas.forEach(foto => {
-                renderizarFoto(foto.src, foto.categoria, foto.descripcion, foto.id);
-            });
+        // CONFIGURACIÓN DE TU PROYECTO OMHMYSHAII
+        const firebaseConfig = {
+            apiKey: "AIzaSyCvCqmdL5T1enDMTBezHlwwPwjJjQGn2Oc",
+            authDomain: "ohmyshaii.firebaseapp.com",
+            projectId: "ohmyshaii",
+            storageBucket: "ohmyshaii.firebasestorage.app",
+            messagingSenderId: "411681310476",
+            appId: "1:411681310476:web:0f1dd40f23beae217dab29",
+            measurementId: "G-0H4XR10YZ7"
+        };
+
+        // Inicializar Firebase
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+        const storage = getStorage(app);
+
+        // Cargar fotos desde Firebase al cargar la ventana
+        window.addEventListener('DOMContentLoaded', cargarFotosFirebase);
+
+        async function cargarFotosFirebase() {
+            const galeria = document.getElementById('galeria-grid');
+            galeria.innerHTML = '';
+            
+            try {
+                const q = query(collection(db, "catalogo"), orderBy("fecha", "desc"));
+                const querySnapshot = await getDocs(q);
+                
+                querySnapshot.forEach((docSnap) => {
+                    const data = docSnap.data();
+                    renderizarFoto(data.url, data.categoria, data.descripcion, docSnap.id, data.storagePath);
+                });
+            } catch (error) {
+                console.error("Error al cargar fotos desde Firebase:", error);
+            }
         }
 
-        // --- Detección de 3 Clics rápidos ---
+        // Subir nueva foto a Firebase Storage + Firestore
+        document.getElementById('form-subir-foto').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const archivo = document.getElementById('input-foto').files[0];
+            const categoria = document.getElementById('select-categoria').value;
+            const descripcion = document.getElementById('input-descripcion').value;
+
+            if (!archivo) return;
+
+            const loader = document.getElementById('loader');
+            const btnPublicar = document.getElementById('btn-publicar');
+
+            try {
+                loader.style.display = 'block';
+                btnPublicar.disabled = true;
+
+                // 1. Subir imagen a Storage
+                const storagePath = `catalogo/${Date.now()}_${archivo.name}`;
+                const storageRef = ref(storage, storagePath);
+                await uploadBytes(storageRef, archivo);
+                const downloadURL = await getDownloadURL(storageRef);
+
+                // 2. Guardar registro en Firestore
+                const docRef = await addDoc(collection(db, "catalogo"), {
+                    url: downloadURL,
+                    categoria: categoria,
+                    descripcion: descripcion,
+                    storagePath: storagePath,
+                    fecha: new Date()
+                });
+
+                renderizarFoto(downloadURL, categoria, descripcion, docRef.id, storagePath, true);
+
+                alert('¡Foto subida a la nube exitosamente!');
+                document.getElementById('form-subir-foto').reset();
+            } catch (error) {
+                console.error("Error al subir:", error);
+                alert("Ocurrió un error al subir la foto. Revisa las reglas de seguridad en Firebase.");
+            } finally {
+                loader.style.display = 'none';
+                btnPublicar.disabled = false;
+            }
+        });
+
+        // Dibujar tarjetas en el DOM
+        function renderizarFoto(src, categoria, descripcion, id, storagePath, alInicio = false) {
+            const nuevaTarjeta = document.createElement('div');
+            nuevaTarjeta.className = `galeria-item ${categoria}`;
+            nuevaTarjeta.dataset.id = id;
+            nuevaTarjeta.dataset.path = storagePath;
+
+            nuevaTarjeta.innerHTML = `
+                <button class="btn-eliminar">✖</button>
+                <img src="${src}" alt="${descripcion}">
+                <div class="overlay"><span>${categoria.charAt(0).toUpperCase() + categoria.slice(1)}</span></div>
+            `;
+
+            // Evento Eliminar
+            nuevaTarjeta.querySelector('.btn-eliminar').addEventListener('click', () => eliminarFoto(doc(db, "catalogo", id), storagePath, nuevaTarjeta));
+            
+            // Evento Lightbox
+            nuevaTarjeta.querySelector('img').addEventListener('click', () => abrirLightbox(nuevaTarjeta));
+
+            const galeria = document.getElementById('galeria-grid');
+            if (alInicio) {
+                galeria.insertBefore(nuevaTarjeta, galeria.firstChild);
+            } else {
+                galeria.appendChild(nuevaTarjeta);
+            }
+        }
+
+        // Eliminar foto de Firestore y Storage
+        async function eliminarFoto(docRef, storagePath, tarjetaElem) {
+            if (confirm('¿Estás seguro de que deseas eliminar esta imagen permanentemente?')) {
+                try {
+                    await deleteDoc(docRef);
+                    if (storagePath) {
+                        const fileRef = ref(storage, storagePath);
+                        await deleteObject(fileRef);
+                    }
+                    tarjetaElem.remove();
+                    alert('Imagen eliminada.');
+                } catch (error) {
+                    console.error("Error al borrar:", error);
+                }
+            }
+        }
+    </script>
+
+    <script>
+        // --- Clics triples en Logotipo ---
         let clicsLogo = 0;
         let timerClics;
 
@@ -236,70 +344,6 @@
         function cerrarSesion() {
             document.getElementById('panel-admin').style.display = 'none';
             document.getElementById('galeria-grid').classList.remove('modo-admin');
-        }
-
-        // --- Subir Foto y Guardar en localStorage ---
-        document.getElementById('form-subir-foto').addEventListener('submit', function(e) {
-            e.preventDefault();
-            
-            const archivo = document.getElementById('input-foto').files[0];
-            const categoria = document.getElementById('select-categoria').value;
-            const descripcion = document.getElementById('input-descripcion').value;
-
-            if (archivo) {
-                const reader = new FileReader();
-                reader.onload = function(e) {
-                    const fotoObj = {
-                        id: Date.now(),
-                        src: e.target.result,
-                        categoria: categoria,
-                        descripcion: descripcion
-                    };
-
-                    // Guardar objeto en el array de localStorage
-                    const fotos = JSON.parse(localStorage.getItem('galeria_shaii')) || [];
-                    fotos.unshift(fotoObj);
-                    localStorage.setItem('galeria_shaii', JSON.stringify(fotos));
-
-                    // Renderizar en la galería en pantalla
-                    renderizarFoto(fotoObj.src, fotoObj.categoria, fotoObj.descripcion, fotoObj.id);
-
-                    alert('¡Foto publicada y guardada con éxito!');
-                    document.getElementById('form-subir-foto').reset();
-                };
-                reader.readAsDataURL(archivo);
-            }
-        });
-
-        function renderizarFoto(src, categoria, descripcion, id) {
-            const nuevaTarjeta = document.createElement('div');
-            nuevaTarjeta.className = `galeria-item ${categoria}`;
-            if (id) nuevaTarjeta.dataset.id = id;
-
-            nuevaTarjeta.innerHTML = `
-                <button class="btn-eliminar" onclick="eliminarFoto(this)">✖</button>
-                <img src="${src}" alt="${descripcion}" onclick="abrirLightbox(this.parentElement)">
-                <div class="overlay"><span>${categoria.charAt(0).toUpperCase() + categoria.slice(1)}</span></div>
-            `;
-
-            const galeria = document.getElementById('galeria-grid');
-            galeria.insertBefore(nuevaTarjeta, galeria.firstChild);
-        }
-
-        // --- Eliminar Foto del Dom y de localStorage ---
-        function eliminarFoto(boton) {
-            if (confirm('¿Estás seguro de que deseas eliminar esta imagen?')) {
-                const tarjeta = boton.parentElement;
-                const id = tarjeta.dataset.id;
-
-                if (id) {
-                    let fotos = JSON.parse(localStorage.getItem('galeria_shaii')) || [];
-                    fotos = fotos.filter(f => f.id != id);
-                    localStorage.setItem('galeria_shaii', JSON.stringify(fotos));
-                }
-
-                tarjeta.remove();
-            }
         }
 
         // --- Filtros y Lightbox ---
