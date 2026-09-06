@@ -119,7 +119,7 @@
                     <option value="pestanas">Pestañas</option>
                 </select>
                 <input type="text" id="input-descripcion" placeholder="Descripción de la imagen" required>
-                <button type="submit" class="tab-btn active" style="margin-top: 10px; cursor: pointer; border:none; padding:10px 20px;">Publicar Imagen</button>
+                <button type="submit" id="btn-publicar" class="tab-btn active" style="margin-top: 10px; cursor: pointer; border:none; padding:10px 20px;">Publicar Imagen</button>
             </form>
             <button onclick="cerrarSesion()" style="margin-top:15px; background:transparent; border:none; color:#d97706; cursor:pointer; text-decoration:underline;">Cerrar Sesión</button>
         </section>
@@ -178,7 +178,7 @@
         </div>
     </div>
 
-    <!-- Módulo de Firebase Firestore (Base de datos remota sin costo) -->
+    <!-- Módulo de Firebase Firestore -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
         import { getFirestore, collection, addDoc, getDocs, deleteDoc, doc, query, orderBy } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
@@ -212,34 +212,64 @@
             }
         }
 
-        // Subida de imagen codificada a Firestore
+        // Subida de imagen comprimida automáticamente
         document.getElementById('form-subir-foto').addEventListener('submit', function(e) {
             e.preventDefault();
             
             const archivo = document.getElementById('input-foto').files[0];
             const categoria = document.getElementById('select-categoria').value;
             const descripcion = document.getElementById('input-descripcion').value;
+            const btnPublicar = document.getElementById('btn-publicar');
 
             if (archivo) {
-                const reader = new FileReader();
-                reader.onload = async function(eReader) {
-                    const base64Data = eReader.target.result;
-                    
-                    try {
-                        const docRef = await addDoc(collection(db, "galeria"), {
-                            src: base64Data,
-                            categoria: categoria,
-                            descripcion: descripcion,
-                            fecha: new Date()
-                        });
+                btnPublicar.innerText = "Procesando...";
+                btnPublicar.disabled = true;
 
-                        renderizarFotoFirebase(base64Data, categoria, descripcion, docRef.id, true);
-                        alert('¡Foto publicada y guardada con éxito!');
-                        document.getElementById('form-subir-foto').reset();
-                    } catch (err) {
-                        console.error("Error al guardar en Firestore:", err);
-                        alert("Error al conectar con la base de datos.");
-                    }
+                const reader = new FileReader();
+                reader.onload = function(eReader) {
+                    const img = new Image();
+                    img.src = eReader.target.result;
+
+                    img.onload = async function() {
+                        // Redimensionar imagen para no exceder límites de Firestore
+                        const canvas = document.createElement('canvas');
+                        const MAX_WIDTH = 1000;
+                        let width = img.width;
+                        let height = img.height;
+
+                        if (width > MAX_WIDTH) {
+                            height = Math.round((height * MAX_WIDTH) / width);
+                            width = MAX_WIDTH;
+                        }
+
+                        canvas.width = width;
+                        canvas.height = height;
+
+                        const ctx = canvas.getContext('2d');
+                        ctx.drawImage(img, 0, 0, width, height);
+
+                        // Convertir a JPEG comprimido (calidad 70%)
+                        const base64Comprimido = canvas.toDataURL('image/jpeg', 0.7);
+
+                        try {
+                            const docRef = await addDoc(collection(db, "galeria"), {
+                                src: base64Comprimido,
+                                categoria: categoria,
+                                descripcion: descripcion,
+                                fecha: new Date()
+                            });
+
+                            renderizarFotoFirebase(base64Comprimido, categoria, descripcion, docRef.id, true);
+                            alert('¡Foto publicada y guardada con éxito!');
+                            document.getElementById('form-subir-foto').reset();
+                        } catch (err) {
+                            console.error("Error al guardar en Firestore:", err);
+                            alert("Error al conectar con la base de datos. Revisa las reglas de seguridad en la consola de Firebase.");
+                        } finally {
+                            btnPublicar.innerText = "Publicar Imagen";
+                            btnPublicar.disabled = false;
+                        }
+                    };
                 };
                 reader.readAsDataURL(archivo);
             }
