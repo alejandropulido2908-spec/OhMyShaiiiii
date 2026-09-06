@@ -181,7 +181,7 @@
     <!-- Módulo de Firebase Firestore -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-        import { getFirestore, collection, addDoc, getDocs, deleteDoc, doc, query, orderBy } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+        import { getFirestore, collection, addDoc, deleteDoc, doc, query, orderBy, onSnapshot } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyCvCqmdL5T1enDMTBezHlwwPwjJjQGn2Oc",
@@ -196,23 +196,24 @@
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
 
-        // Cargar las fotos almacenadas en Firestore al iniciar
-        document.addEventListener('DOMContentLoaded', cargarFotosFirestore);
+        // ESCUCHADOR EN TIEMPO REAL: Sincroniza móviles y ordenadores al instante
+        document.addEventListener('DOMContentLoaded', () => {
+            const q = query(collection(db, "galeria"), orderBy("fecha", "desc"));
+            
+            onSnapshot(q, (snapshot) => {
+                // Eliminar previamente cargados de Firestore para evitar duplicados
+                document.querySelectorAll('.item-firebase').forEach(el => el.remove());
 
-        async function cargarFotosFirestore() {
-            try {
-                const q = query(collection(db, "galeria"), orderBy("fecha", "desc"));
-                const snapshot = await getDocs(q);
                 snapshot.forEach(docSnap => {
                     const foto = docSnap.data();
                     renderizarFotoFirebase(foto.src, foto.categoria, foto.descripcion, docSnap.id);
                 });
-            } catch (e) {
-                console.error("Error al obtener la base de datos:", e);
-            }
-        }
+            }, (error) => {
+                console.error("Error al conectar con Firestore en tiempo real:", error);
+            });
+        });
 
-        // Subida de imagen comprimida automáticamente
+        // Subida de imagen con compresión ultra ligera para teléfonos
         document.getElementById('form-subir-foto').addEventListener('submit', function(e) {
             e.preventDefault();
             
@@ -222,7 +223,7 @@
             const btnPublicar = document.getElementById('btn-publicar');
 
             if (archivo) {
-                btnPublicar.innerText = "Procesando...";
+                btnPublicar.innerText = "Comprimiendo y guardando...";
                 btnPublicar.disabled = true;
 
                 const reader = new FileReader();
@@ -231,9 +232,8 @@
                     img.src = eReader.target.result;
 
                     img.onload = async function() {
-                        // Redimensionar imagen para no exceder límites de Firestore
                         const canvas = document.createElement('canvas');
-                        const MAX_WIDTH = 1000;
+                        const MAX_WIDTH = 600; // Reducido a 600px para máxima compatibilidad móvil
                         let width = img.width;
                         let height = img.height;
 
@@ -248,23 +248,22 @@
                         const ctx = canvas.getContext('2d');
                         ctx.drawImage(img, 0, 0, width, height);
 
-                        // Convertir a JPEG comprimido (calidad 70%)
-                        const base64Comprimido = canvas.toDataURL('image/jpeg', 0.7);
+                        // Compresión al 50% de calidad JPEG
+                        const base64Comprimido = canvas.toDataURL('image/jpeg', 0.5);
 
                         try {
-                            const docRef = await addDoc(collection(db, "galeria"), {
+                            await addDoc(collection(db, "galeria"), {
                                 src: base64Comprimido,
                                 categoria: categoria,
                                 descripcion: descripcion,
                                 fecha: new Date()
                             });
 
-                            renderizarFotoFirebase(base64Comprimido, categoria, descripcion, docRef.id, true);
                             alert('¡Foto publicada y guardada con éxito!');
                             document.getElementById('form-subir-foto').reset();
                         } catch (err) {
                             console.error("Error al guardar en Firestore:", err);
-                            alert("Error al conectar con la base de datos. Revisa las reglas de seguridad en la consola de Firebase.");
+                            alert("Error de envío. Revisa las reglas de seguridad o tu conexión.");
                         } finally {
                             btnPublicar.innerText = "Publicar Imagen";
                             btnPublicar.disabled = false;
@@ -275,9 +274,9 @@
             }
         });
 
-        function renderizarFotoFirebase(src, categoria, descripcion, id, alInicio = false) {
+        function renderizarFotoFirebase(src, categoria, descripcion, id) {
             const nuevaTarjeta = document.createElement('div');
-            nuevaTarjeta.className = `galeria-item ${categoria}`;
+            nuevaTarjeta.className = `galeria-item ${categoria} item-firebase`;
             nuevaTarjeta.dataset.id = id;
 
             nuevaTarjeta.innerHTML = `
@@ -290,7 +289,6 @@
                 if (confirm('¿Estás seguro de que deseas eliminar esta imagen?')) {
                     try {
                         await deleteDoc(doc(db, "galeria", id));
-                        nuevaTarjeta.remove();
                     } catch (err) {
                         console.error("Error al borrar:", err);
                     }
@@ -298,11 +296,7 @@
             });
 
             const galeria = document.getElementById('galeria-grid');
-            if (alInicio) {
-                galeria.insertBefore(nuevaTarjeta, galeria.firstChild);
-            } else {
-                galeria.appendChild(nuevaTarjeta);
-            }
+            galeria.appendChild(nuevaTarjeta);
         }
     </script>
 
