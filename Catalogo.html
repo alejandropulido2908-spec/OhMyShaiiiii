@@ -193,15 +193,17 @@
             measurementId: "G-0H4XR10YZ7"
         };
 
+        console.log("🚀 [Firebase] Inicializando app...");
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
 
-        // ESCUCHADOR EN TIEMPO REAL: Sincroniza móviles y ordenadores al instante
+        // ESCUCHADOR EN TIEMPO REAL: Sincronización instantánea multidispositivo
         document.addEventListener('DOMContentLoaded', () => {
+            console.log("📡 [Firestore] Conectando a la colección 'galeria'...");
             const q = query(collection(db, "galeria"), orderBy("fecha", "desc"));
             
             onSnapshot(q, (snapshot) => {
-                // Eliminar previamente cargados de Firestore para evitar duplicados
+                console.log(`✨ [Firestore] ${snapshot.size} elementos recibidos.`);
                 document.querySelectorAll('.item-firebase').forEach(el => el.remove());
 
                 snapshot.forEach(docSnap => {
@@ -209,31 +211,66 @@
                     renderizarFotoFirebase(foto.src, foto.categoria, foto.descripcion, docSnap.id);
                 });
             }, (error) => {
-                console.error("Error al conectar con Firestore en tiempo real:", error);
+                console.error("❌ Error en escuchador onSnapshot:", error);
+                alert("Error de conexión con Firestore: " + error.message);
             });
         });
 
-        // Subida de imagen con compresión ultra ligera para teléfonos
-        document.getElementById('form-subir-foto').addEventListener('submit', function(e) {
-            e.preventDefault();
-            
-            const archivo = document.getElementById('input-foto').files[0];
-            const categoria = document.getElementById('select-categoria').value;
-            const descripcion = document.getElementById('input-descripcion').value;
-            const btnPublicar = document.getElementById('btn-publicar');
+        // Subida de imagen asíncrona con gestión de errores y compresión ligera
+        const formSubir = document.getElementById('form-subir-foto');
+        if (formSubir) {
+            formSubir.addEventListener('submit', async function(e) {
+                e.preventDefault();
+                e.stopPropagation();
 
-            if (archivo) {
+                console.log("📤 [Formulario] Procesando envío de imagen...");
+                
+                const archivoInput = document.getElementById('input-foto');
+                const categoria = document.getElementById('select-categoria').value;
+                const descripcion = document.getElementById('input-descripcion').value;
+                const btnPublicar = document.getElementById('btn-publicar');
+
+                if (!archivoInput.files || archivoInput.files.length === 0) {
+                    alert("Por favor selecciona una imagen primero.");
+                    return;
+                }
+
                 btnPublicar.innerText = "Comprimiendo y guardando...";
                 btnPublicar.disabled = true;
 
-                const reader = new FileReader();
-                reader.onload = function(eReader) {
-                    const img = new Image();
-                    img.src = eReader.target.result;
+                try {
+                    const base64Comprimido = await optimizarImagen(archivoInput.files[0]);
+                    console.log("Guardando en base de datos Firestore...");
 
-                    img.onload = async function() {
+                    const docRef = await addDoc(collection(db, "galeria"), {
+                        src: base64Comprimido,
+                        categoria: categoria,
+                        descripcion: descripcion,
+                        fecha: new Date()
+                    });
+
+                    console.log("✅ Imagen guardada correctamente con ID:", docRef.id);
+                    alert('¡Foto publicada y guardada con éxito!');
+                    formSubir.reset();
+                } catch (err) {
+                    console.error("❌ Error al publicar la foto:", err);
+                    alert("Error al subir la imagen: " + err.message);
+                } finally {
+                    btnPublicar.innerText = "Publicar Imagen";
+                    btnPublicar.disabled = false;
+                }
+            });
+        }
+
+        // Promesa para la lectura y compresión de imágenes
+        function optimizarImagen(archivo) {
+            return new Promise((resolve, reject) => {
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    const img = new Image();
+                    img.onload = () => {
                         const canvas = document.createElement('canvas');
-                        const MAX_WIDTH = 600; // Reducido a 600px para máxima compatibilidad móvil
+                        const MAX_WIDTH = 500; // Ancho máximo para optimizar carga en móviles
                         let width = img.width;
                         let height = img.height;
 
@@ -248,31 +285,16 @@
                         const ctx = canvas.getContext('2d');
                         ctx.drawImage(img, 0, 0, width, height);
 
-                        // Compresión al 50% de calidad JPEG
-                        const base64Comprimido = canvas.toDataURL('image/jpeg', 0.5);
-
-                        try {
-                            await addDoc(collection(db, "galeria"), {
-                                src: base64Comprimido,
-                                categoria: categoria,
-                                descripcion: descripcion,
-                                fecha: new Date()
-                            });
-
-                            alert('¡Foto publicada y guardada con éxito!');
-                            document.getElementById('form-subir-foto').reset();
-                        } catch (err) {
-                            console.error("Error al guardar en Firestore:", err);
-                            alert("Error de envío. Revisa las reglas de seguridad o tu conexión.");
-                        } finally {
-                            btnPublicar.innerText = "Publicar Imagen";
-                            btnPublicar.disabled = false;
-                        }
+                        // Calidad JPEG al 50%
+                        resolve(canvas.toDataURL('image/jpeg', 0.5));
                     };
+                    img.onerror = () => reject(new Error("Falló el procesamiento visual de la imagen."));
+                    img.src = e.target.result;
                 };
+                reader.onerror = () => reject(new Error("Falló la lectura del archivo seleccionado."));
                 reader.readAsDataURL(archivo);
-            }
-        });
+            });
+        }
 
         function renderizarFotoFirebase(src, categoria, descripcion, id) {
             const nuevaTarjeta = document.createElement('div');
@@ -290,7 +312,8 @@
                     try {
                         await deleteDoc(doc(db, "galeria", id));
                     } catch (err) {
-                        console.error("Error al borrar:", err);
+                        console.error("Error al borrar documento:", err);
+                        alert("No se pudo eliminar de Firestore: " + err.message);
                     }
                 }
             });
