@@ -3,45 +3,97 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>OhMyShaii | Belleza & Cuidado Personal</title>
-
-    <!-- Favicon: usa ../ para salir de la carpeta del HTML hacia assets -->
-    <link rel="icon" type="image/jpeg" href="../assets/logotipo.jpeg">
-    <link rel="shortcut icon" type="image/jpeg" href="../assets/logotipo.jpeg">
-    <link rel="apple-touch-icon" href="../assets/logotipo.jpeg">
-
-    <!-- Open Graph -->
-    <meta property="og:title" content="OhMyShaii | Belleza & Cuidado Personal">
-    <meta property="og:description" content="Especialistas en Manicura, Cejas y Pestañas. Diseños exclusivos y atención personalizada.">
-    <meta property="og:image" content="../assets/logotipo.jpeg">
-    <meta property="og:type" content="website">
-
-    <!-- Estilos CSS (Correcto al usar ../) -->
+    <title>Catálogo | OhMyShaii</title>
+    <link rel="stylesheet" href="../Css/variables.css"> 
     <link rel="stylesheet" href="../Css/styles.css">
+    <style>
+        .admin-modal {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.7);
+            justify-content: center;
+            align-items: center;
+            z-index: 2000;
+        }
+        .admin-modal-content {
+            background: #fff;
+            padding: 25px;
+            border-radius: 12px;
+            max-width: 400px;
+            width: 90%;
+            text-align: center;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+        }
+        .admin-modal-content input, .admin-modal-content select {
+            width: 100%;
+            padding: 10px;
+            margin: 10px 0;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            box-sizing: border-box;
+        }
+        .panel-admin {
+            display: none;
+            background: #fff0f6;
+            border: 2px dashed #f472b6;
+            padding: 20px;
+            border-radius: 12px;
+            margin: 20px auto;
+            max-width: 600px;
+            text-align: center;
+        }
+        .btn-eliminar {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: #ff4d4d;
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 28px;
+            height: 28px;
+            font-weight: bold;
+            cursor: pointer;
+            z-index: 10;
+            display: none;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+        }
+        .modo-admin .btn-eliminar {
+            display: block;
+        }
+        .galeria-item {
+            position: relative;
+        }
+        .loader {
+            display: none;
+            color: #d97706;
+            font-weight: bold;
+            margin-top: 10px;
+        }
+    </style>
 </head>
 <body>
 
     <!-- Header / Navbar -->
     <header class="header">
         <div class="logo">
-            <a href="Index.html">OhMyShaii</a>
+            <!-- 3 Clics rápidos para abrir el Login secreto -->
+            <a href="#" onclick="contarClicsLogo(event)">OhMyShaii</a>
         </div>
 
-        <!-- Checkbox oculto para controlar la apertura del menú en móviles -->
         <input type="checkbox" id="menu-toggle" class="menu-checkbox">
         
-        <!-- Botón de Menú Hamburguesa para móviles -->
         <label for="menu-toggle" class="menu-btn">
             <span></span>
             <span></span>
             <span></span>
         </label>
 
-        <!-- Navegación que se pliega/despliega en teléfonos -->
         <nav class="nav-bar">
             <ul class="nav-link">
-                <li><a href="Index.html" class="active">Inicio</a></li>
-                <li><a href="Catalogo.html">Catálogo</a></li>
+                <li><a href="Index.html">Inicio</a></li>
+                <li><a href="Catalogo.html" class="active">Catálogo</a></li>
                 <li><a href="Contacto.html">Contacto</a></li>
                 <li><a href="Servicios.html">Servicios</a></li>
             </ul>
@@ -51,62 +103,280 @@
         </nav>
     </header>
 
-    <!-- Hero Section (Sección Principal) -->
-    <section class="hero">
-        <div class="hero-content">
-            <h1>El Arte de Realzar tu Belleza Natural</h1>
-            <p>Especialistas en Manicura, Cejas y Pestañas. Diseños exclusivos y atención personalizada para consentirte.</p>
-            <div class="hero-buttons">
-                <a href="Contacto.html" class="btn-primary">Agendar Cita</a>
-                <a href="Catalogo.html" class="btn-secondary">Ver Galería</a>
-            </div>
-        </div>
-    </section>
-
-    <!-- Resumen de Servicios -->
-    <section class="home-servicios">
+    <!-- Sección Catálogo -->
+    <main class="catalogo-section">
         <div class="titulo-seccion">
-            <h2>Nuestra Especialidad</h2>
-            <p>Tratamientos diseñados para destacar tu mejor versión</p>
+            <h2>Nuestro Trabajo</h2>
+            <p>Explora la galería de nuestras creaciones en Uñas, Cejas y Pestañas</p>
         </div>
-        <div class="servicios-grid-home">
-            <div class="card-home">
-                <h3>Uñas</h3>
-                <p>Manicura Rusa, Esculpidas y Nail Art personalizado con acabados impecables.</p>
-                <a href="Servicios.html">Saber más &rarr;</a>
-            </div>
-            <div class="card-home">
-                <h3>Cejas</h3>
-                <p>Diseño, perfilado, Henna y Brow Lamination para una mirada con personalidad.</p>
-                <a href="Servicios.html">Saber más &rarr;</a>
-            </div>
-            <div class="card-home">
-                <h3>Pestañas</h3>
-                <p>Lifting, tinte y extensiones pelo a pelo para impactar en cada mirada.</p>
-                <a href="Servicios.html">Saber más &rarr;</a>
-            </div>
-        </div>
-    </section>
 
-    <!-- Sección ¿Por qué elegirnos? -->
-    <section class="beneficios">
-        <div class="beneficios-content">
-            <h2>¿Por qué OhMyShaii?</h2>
-            <ul class="lista-beneficios">
-                <li><strong>Atención Personalizada:</strong> Diseños a la medida de tu estilo.</li>
-                <li><strong>Productos de Alta Calidad:</strong> Cuidamos la salud de tus uñas, piel y pestañas.</li>
-                <li><strong>Higiene y Bioseguridad:</strong> Herramientas esterilizadas y espacios impecables.</li>
-            </ul>
-        </div>
-    </section>
+        <!-- PANEL DE SUBIDA PARA LA DUEÑA / DEV -->
+        <section id="panel-admin" class="panel-admin">
+            <h3 id="panel-titulo">👑 Panel de Gestión</h3>
+            <p>Sube fotos ilimitadas o elimina haciendo clic en la (✖) de cada imagen.</p>
+            
+            <form id="form-subir-foto">
+                <input type="file" id="input-foto" accept="image/*" required>
+                <select id="select-categoria" required>
+                    <option value="" disabled selected>Selecciona categoría</option>
+                    <option value="unas">Uñas</option>
+                    <option value="cejas">Cejas</option>
+                    <option value="pestanas">Pestañas</option>
+                </select>
+                <input type="text" id="input-descripcion" placeholder="Descripción de la imagen" required>
+                <button type="submit" id="btn-publicar" class="tab-btn active" style="margin-top: 10px; cursor: pointer; border:none; padding:10px 20px;">Publicar Imagen</button>
+                <div id="loader" class="loader">Subiendo imagen a la nube... ⏳</div>
+            </form>
+            <button onclick="cerrarSesion()" style="margin-top:15px; background:transparent; border:none; color:#d97706; cursor:pointer; text-decoration:underline;">Cerrar Sesión</button>
+        </section>
 
-    <!-- Footer -->
-    <footer class="footer">
-        <div class="footer-content">
-            <p><strong>OhMyShaii</strong> &copy; 2026 - Todos los derechos reservados.</p>
-            <p>Síguenos en redes para ver nuestras promociones.</p>
+        <!-- Botones para filtrar por Álbum -->
+        <div class="album-tabs">
+            <button class="tab-btn active" onclick="filtrarAlbum('todas', event)">Ver Todo</button>
+            <button class="tab-btn" onclick="filtrarAlbum('unas', event)">Uñas</button>
+            <button class="tab-btn" onclick="filtrarAlbum('cejas', event)">Cejas</button>
+            <button class="tab-btn" onclick="filtrarAlbum('pestanas', event)">Pestañas</button>
         </div>
-    </footer>
 
+        <!-- Galería de Fotos -->
+        <div class="galeria-grid" id="galeria-grid">
+            <!-- Las fotos cargadas desde Firebase aparecerán aquí automáticamente -->
+        </div>
+    </main>
+
+    <!-- Modal Lightbox (Visor) -->
+    <div id="lightbox" class="lightbox" onclick="cerrarLightbox()">
+        <span class="cerrar">&times;</span>
+        <img class="lightbox-contenido" id="img-ampliada">
+        <div id="caption"></div>
+    </div>
+
+    <!-- MODAL DE LOGIN -->
+    <div id="admin-modal" class="admin-modal">
+        <div class="admin-modal-content">
+            <h3>Acceso Privado</h3>
+            <form id="form-login">
+                <input type="text" id="admin-user" placeholder="Usuario" required>
+                <input type="password" id="admin-pass" placeholder="Contraseña" required>
+                <button type="submit" class="tab-btn active" style="width: 100%; cursor: pointer; border:none; padding:10px;">Ingresar</button>
+            </form>
+            <button onclick="cerrarLogin()" style="margin-top: 10px; background: none; border: none; color: #666; cursor: pointer;">Cancelar</button>
+        </div>
+    </div>
+
+    <!-- SDKs de Firebase Modular vía CDN (Sin necesidad de NPM) -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+        import { getFirestore, collection, addDoc, getDocs, deleteDoc, doc, query, orderBy } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+        import { getStorage, ref, uploadBytes, getDownloadURL, deleteObject } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-storage.js";
+
+        // CONFIGURACIÓN DE TU PROYECTO OMHMYSHAII
+        const firebaseConfig = {
+            apiKey: "AIzaSyCvCqmdL5T1enDMTBezHlwwPwjJjQGn2Oc",
+            authDomain: "ohmyshaii.firebaseapp.com",
+            projectId: "ohmyshaii",
+            storageBucket: "ohmyshaii.firebasestorage.app",
+            messagingSenderId: "411681310476",
+            appId: "1:411681310476:web:0f1dd40f23beae217dab29",
+            measurementId: "G-0H4XR10YZ7"
+        };
+
+        // Inicializar Firebase
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+        const storage = getStorage(app);
+
+        // Cargar fotos desde Firebase al cargar la ventana
+        window.addEventListener('DOMContentLoaded', cargarFotosFirebase);
+
+        async function cargarFotosFirebase() {
+            const galeria = document.getElementById('galeria-grid');
+            galeria.innerHTML = '';
+            
+            try {
+                const q = query(collection(db, "catalogo"), orderBy("fecha", "desc"));
+                const querySnapshot = await getDocs(q);
+                
+                querySnapshot.forEach((docSnap) => {
+                    const data = docSnap.data();
+                    renderizarFoto(data.url, data.categoria, data.descripcion, docSnap.id, data.storagePath);
+                });
+            } catch (error) {
+                console.error("Error al cargar fotos desde Firebase:", error);
+            }
+        }
+
+        // Subir nueva foto a Firebase Storage + Firestore
+        document.getElementById('form-subir-foto').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const archivo = document.getElementById('input-foto').files[0];
+            const categoria = document.getElementById('select-categoria').value;
+            const descripcion = document.getElementById('input-descripcion').value;
+
+            if (!archivo) return;
+
+            const loader = document.getElementById('loader');
+            const btnPublicar = document.getElementById('btn-publicar');
+
+            try {
+                loader.style.display = 'block';
+                btnPublicar.disabled = true;
+
+                // 1. Subir imagen a Storage
+                const storagePath = `catalogo/${Date.now()}_${archivo.name}`;
+                const storageRef = ref(storage, storagePath);
+                await uploadBytes(storageRef, archivo);
+                const downloadURL = await getDownloadURL(storageRef);
+
+                // 2. Guardar registro en Firestore
+                const docRef = await addDoc(collection(db, "catalogo"), {
+                    url: downloadURL,
+                    categoria: categoria,
+                    descripcion: descripcion,
+                    storagePath: storagePath,
+                    fecha: new Date()
+                });
+
+                renderizarFoto(downloadURL, categoria, descripcion, docRef.id, storagePath, true);
+
+                alert('¡Foto subida a la nube exitosamente!');
+                document.getElementById('form-subir-foto').reset();
+            } catch (error) {
+                console.error("Error al subir:", error);
+                alert("Ocurrió un error al subir la foto. Revisa las reglas de seguridad en Firebase.");
+            } finally {
+                loader.style.display = 'none';
+                btnPublicar.disabled = false;
+            }
+        });
+
+        // Dibujar tarjetas en el DOM
+        function renderizarFoto(src, categoria, descripcion, id, storagePath, alInicio = false) {
+            const nuevaTarjeta = document.createElement('div');
+            nuevaTarjeta.className = `galeria-item ${categoria}`;
+            nuevaTarjeta.dataset.id = id;
+            nuevaTarjeta.dataset.path = storagePath;
+
+            nuevaTarjeta.innerHTML = `
+                <button class="btn-eliminar">✖</button>
+                <img src="${src}" alt="${descripcion}">
+                <div class="overlay"><span>${categoria.charAt(0).toUpperCase() + categoria.slice(1)}</span></div>
+            `;
+
+            // Evento Eliminar
+            nuevaTarjeta.querySelector('.btn-eliminar').addEventListener('click', () => eliminarFoto(doc(db, "catalogo", id), storagePath, nuevaTarjeta));
+            
+            // Evento Lightbox
+            nuevaTarjeta.querySelector('img').addEventListener('click', () => abrirLightbox(nuevaTarjeta));
+
+            const galeria = document.getElementById('galeria-grid');
+            if (alInicio) {
+                galeria.insertBefore(nuevaTarjeta, galeria.firstChild);
+            } else {
+                galeria.appendChild(nuevaTarjeta);
+            }
+        }
+
+        // Eliminar foto de Firestore y Storage
+        async function eliminarFoto(docRef, storagePath, tarjetaElem) {
+            if (confirm('¿Estás seguro de que deseas eliminar esta imagen permanentemente?')) {
+                try {
+                    await deleteDoc(docRef);
+                    if (storagePath) {
+                        const fileRef = ref(storage, storagePath);
+                        await deleteObject(fileRef);
+                    }
+                    tarjetaElem.remove();
+                    alert('Imagen eliminada.');
+                } catch (error) {
+                    console.error("Error al borrar:", error);
+                }
+            }
+        }
+    </script>
+
+    <script>
+        // --- Clics triples en Logotipo ---
+        let clicsLogo = 0;
+        let timerClics;
+
+        function contarClicsLogo(e) {
+            e.preventDefault();
+            clicsLogo++;
+            clearTimeout(timerClics);
+            
+            if (clicsLogo === 3) {
+                document.getElementById('admin-modal').style.display = 'flex';
+                clicsLogo = 0;
+            } else {
+                timerClics = setTimeout(() => { clicsLogo = 0; }, 1500);
+            }
+        }
+
+        function cerrarLogin() {
+            document.getElementById('admin-modal').style.display = 'none';
+        }
+
+        // --- Credenciales ---
+        document.getElementById('form-login').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const user = document.getElementById('admin-user').value.trim();
+            const pass = document.getElementById('admin-pass').value.trim();
+
+            if (user === 'admin' && pass === 'dev1234') {
+                iniciarSesion('🛠️ Panel Developer / Admin');
+            } else if (user === 'shaii' && pass === 'shaii2026') {
+                iniciarSesion('✨ Panel de Control | OhMyShaii');
+            } else {
+                alert('Usuario o contraseña incorrectos');
+            }
+        });
+
+        function iniciarSesion(titulo) {
+            cerrarLogin();
+            document.getElementById('panel-titulo').innerText = titulo;
+            document.getElementById('panel-admin').style.display = 'block';
+            document.getElementById('galeria-grid').classList.add('modo-admin');
+            document.getElementById('form-login').reset();
+        }
+
+        function cerrarSesion() {
+            document.getElementById('panel-admin').style.display = 'none';
+            document.getElementById('galeria-grid').classList.remove('modo-admin');
+        }
+
+        // --- Filtros y Lightbox ---
+        function filtrarAlbum(categoria, e) {
+            const botones = document.querySelectorAll('.tab-btn');
+            const items = document.querySelectorAll('.galeria-item');
+
+            botones.forEach(btn => btn.classList.remove('active'));
+            if (e) e.target.classList.add('active');
+
+            items.forEach(item => {
+                if (categoria === 'todas' || item.classList.contains(categoria)) {
+                    item.style.display = 'block';
+                } else {
+                    item.style.display = 'none';
+                }
+            });
+        }
+
+        function abrirLightbox(elemento) {
+            const modal = document.getElementById('lightbox');
+            const imgAmpliada = document.getElementById('img-ampliada');
+            const captionText = document.getElementById('caption');
+            const imagenOriginal = elemento.querySelector('img');
+
+            modal.style.display = 'flex';
+            imgAmpliada.src = imagenOriginal.src;
+            captionText.innerHTML = imagenOriginal.alt;
+        }
+
+        function cerrarLightbox() {
+            document.getElementById('lightbox').style.display = 'none';
+        }
+    </script>
 </body>
-</html>
+</html>npm install -g firebase-tools
