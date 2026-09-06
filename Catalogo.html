@@ -6,85 +6,26 @@
     <title>Catálogo | OhMyShaii</title>
     <link rel="stylesheet" href="../Css/variables.css"> 
     <link rel="stylesheet" href="../Css/styles.css">
-    <style>
-        /* Estilos para Modales y Panel de Administración */
-        .admin-modal {
-            display: none;
-            position: fixed;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.7);
-            justify-content: center;
-            align-items: center;
-            z-index: 2000;
-        }
-        .admin-modal-content {
-            background: #fff;
-            padding: 25px;
-            border-radius: 12px;
-            max-width: 400px;
-            width: 90%;
-            text-align: center;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
-        }
-        .admin-modal-content input, .admin-modal-content select {
-            width: 100%;
-            padding: 10px;
-            margin: 10px 0;
-            border: 1px solid #ccc;
-            border-radius: 6px;
-            box-sizing: border-box;
-        }
-        .panel-admin {
-            display: none;
-            background: #fff0f6;
-            border: 2px dashed #f472b6;
-            padding: 20px;
-            border-radius: 12px;
-            margin: 20px auto;
-            max-width: 600px;
-            text-align: center;
-        }
-        .btn-eliminar {
-            position: absolute;
-            top: 10px;
-            right: 10px;
-            background: #ff4d4d;
-            color: white;
-            border: none;
-            border-radius: 50%;
-            width: 28px;
-            height: 28px;
-            font-weight: bold;
-            cursor: pointer;
-            z-index: 10;
-            display: none;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
-        }
-        .modo-admin .btn-eliminar {
-            display: block;
-        }
-        .galeria-item {
-            position: relative;
-        }
-    </style>
 </head>
 <body>
 
     <!-- Header / Navbar -->
     <header class="header">
         <div class="logo">
-            <!-- 3 Clics rápidos para abrir el Login secreto -->
-            <a href="#" onclick="contarClicsLogo(event)">OhMyShaii</a>
+            <a href="Index.html">OhMyShaii</a>
         </div>
 
+        <!-- Checkbox oculto para controlar la apertura del menú en móviles -->
         <input type="checkbox" id="menu-toggle" class="menu-checkbox">
         
+        <!-- Botón de Menú Hamburguesa para móviles -->
         <label for="menu-toggle" class="menu-btn">
             <span></span>
             <span></span>
             <span></span>
         </label>
 
+        <!-- Navegación que se pliega/despliega en teléfonos -->
         <nav class="nav-bar">
             <ul class="nav-link">
                 <li><a href="Index.html">Inicio</a></li>
@@ -105,210 +46,76 @@
             <p>Explora la galería de nuestras creaciones en Uñas, Cejas y Pestañas</p>
         </div>
 
-        <!-- PANEL DE SUBIDA PARA LA DUEÑA / DEV -->
-        <section id="panel-admin" class="panel-admin">
-            <h3 id="panel-titulo">👑 Panel de Gestión</h3>
-            <p>Sube contenido o elimina fotos existentes haciendo clic en el botón (✖) de cada tarjeta.</p>
-            
-            <form id="form-subir-foto">
-                <input type="file" id="input-foto" accept="image/*" required>
-                <select id="select-categoria" required>
-                    <option value="" disabled selected>Selecciona categoría</option>
-                    <option value="unas">Uñas</option>
-                    <option value="cejas">Cejas</option>
-                    <option value="pestanas">Pestañas</option>
-                </select>
-                <input type="text" id="input-descripcion" placeholder="Descripción de la imagen" required>
-                <button type="submit" class="tab-btn active" style="margin-top: 10px; cursor: pointer; border:none; padding:10px 20px;">Publicar Imagen</button>
-            </form>
-            <button onclick="cerrarSesion()" style="margin-top:15px; background:transparent; border:none; color:#d97706; cursor:pointer; text-decoration:underline;">Cerrar Sesión</button>
-        </section>
-
         <!-- Botones para filtrar por Álbum -->
         <div class="album-tabs">
-            <button class="tab-btn active" onclick="filtrarAlbum('todas', event)">Ver Todo</button>
-            <button class="tab-btn" onclick="filtrarAlbum('unas', event)">Uñas</button>
-            <button class="tab-btn" onclick="filtrarAlbum('cejas', event)">Cejas</button>
-            <button class="tab-btn" onclick="filtrarAlbum('pestanas', event)">Pestañas</button>
+            <button class="tab-btn active" onclick="filtrarAlbum('todas')">Ver Todo</button>
+            <button class="tab-btn" onclick="filtrarAlbum('unas')">Uñas</button>
+            <button class="tab-btn" onclick="filtrarAlbum('cejas')">Cejas</button>
+            <button class="tab-btn" onclick="filtrarAlbum('pestanas')">Pestañas</button>
         </div>
 
         <!-- Galería de Fotos -->
-        <div class="galeria-grid" id="galeria-grid">
-            <!-- Fotos base fijas -->
-            <div class="galeria-item unas">
-                <button class="btn-eliminar" onclick="eliminarFoto(this)">✖</button>
-                <img src="../assets/WhatsApp Image 2026-09-01 at 9.06.03 PM.jpeg" alt="Diseño de Uñas 1" onclick="abrirLightbox(this.parentElement)">
+        <div class="galeria-grid">
+            <!-- Uñas -->
+            <div class="galeria-item unas" onclick="abrirLightbox(this)">
+                <img src="../assets/WhatsApp Image 2026-09-01 at 9.06.03 PM.jpeg" alt="Diseño de Uñas 1">
                 <div class="overlay"><span>Uñas</span></div>
             </div>
-            <div class="galeria-item unas">
-                <button class="btn-eliminar" onclick="eliminarFoto(this)">✖</button>
-                <img src="../assets/4.jpeg" alt="Diseño de Uñas 2" onclick="abrirLightbox(this.parentElement)">
+            <div class="galeria-item unas" onclick="abrirLightbox(this)">
+                <img src="../assets/4.jpeg" alt="Diseño de Uñas 2">
                 <div class="overlay"><span>Uñas</span></div>
             </div>
-            <div class="galeria-item cejas">
-                <button class="btn-eliminar" onclick="eliminarFoto(this)">✖</button>
-                <img src="../assets/cejas 1.png" alt="Diseño de Cejas 1" onclick="abrirLightbox(this.parentElement)">
+            <div class="galeria-item unas" onclick="abrirLightbox(this)">
+                <img src="../assets/5.jpeg" alt="Diseño de Uñas 2">
+                <div class="overlay"><span>Uñas</span></div>
+            </div>
+            <div class="galeria-item unas" onclick="abrirLightbox(this)">
+                <img src="../assets/6.jpeg" alt="Diseño de Uñas 2">
+                <div class="overlay"><span>Uñas</span></div>
+            </div>
+            <div class="galeria-item unas" onclick="abrirLightbox(this)">
+                <img src="../assets/7.jpeg" alt="Diseño de Uñas 2">
+                <div class="overlay"><span>Uñas</span></div>
+            </div>
+
+            <!-- Cejas -->
+            <div class="galeria-item cejas" onclick="abrirLightbox(this)">
+                <img src="../assets/cejas 1.png" alt="Diseño de Cejas 1">
                 <div class="overlay"><span>Cejas</span></div>
             </div>
-            <div class="galeria-item pestanas">
-                <button class="btn-eliminar" onclick="eliminarFoto(this)">✖</button>
-                <img src="../assets/pestañas 1.png" alt="Diseño de Pestañas 1" onclick="abrirLightbox(this.parentElement)">
+            <div class="galeria-item cejas" onclick="abrirLightbox(this)">
+                <img src="../assets/cejas 2.png" alt="Diseño de Cejas 2">
+                <div class="overlay"><span>Cejas</span></div>
+            </div>
+
+            <!-- Pestañas -->
+            <div class="galeria-item pestanas" onclick="abrirLightbox(this)">
+                <img src="../assets/pestañas 1.png" alt="Diseño de Pestañas 1">
+                <div class="overlay"><span>Pestañas</span></div>
+            </div>
+            <div class="galeria-item pestanas" onclick="abrirLightbox(this)">
+                <img src="../assets/pestañas 2.png" alt="Diseño de Pestañas 2">
                 <div class="overlay"><span>Pestañas</span></div>
             </div>
         </div>
     </main>
 
-    <!-- Modal Lightbox (Visor) -->
+    <!-- Modal Lightbox (Visor de fotos ampliada) -->
     <div id="lightbox" class="lightbox" onclick="cerrarLightbox()">
         <span class="cerrar">&times;</span>
         <img class="lightbox-contenido" id="img-ampliada">
         <div id="caption"></div>
     </div>
 
-    <!-- MODAL DE LOGIN -->
-    <div id="admin-modal" class="admin-modal">
-        <div class="admin-modal-content">
-            <h3>Acceso Privado</h3>
-            <form id="form-login">
-                <input type="text" id="admin-user" placeholder="Usuario" required>
-                <input type="password" id="admin-pass" placeholder="Contraseña" required>
-                <button type="submit" class="tab-btn active" style="width: 100%; cursor: pointer; border:none; padding:10px;">Ingresar</button>
-            </form>
-            <button onclick="cerrarLogin()" style="margin-top: 10px; background: none; border: none; color: #666; cursor: pointer;">Cancelar</button>
-        </div>
-    </div>
-
+    <!-- Script en línea para interactividad rápida -->
     <script>
-        // --- Cargar Fotos desde localStorage al iniciar la página ---
-        document.addEventListener('DOMContentLoaded', cargarFotosGuardadas);
-
-        function cargarFotosGuardadas() {
-            const fotosGuardadas = JSON.parse(localStorage.getItem('galeria_shaii')) || [];
-            fotosGuardadas.forEach(foto => {
-                renderizarFoto(foto.src, foto.categoria, foto.descripcion, foto.id);
-            });
-        }
-
-        // --- Detección de 3 Clics rápidos ---
-        let clicsLogo = 0;
-        let timerClics;
-
-        function contarClicsLogo(e) {
-            e.preventDefault();
-            clicsLogo++;
-            clearTimeout(timerClics);
-            
-            if (clicsLogo === 3) {
-                document.getElementById('admin-modal').style.display = 'flex';
-                clicsLogo = 0;
-            } else {
-                timerClics = setTimeout(() => { clicsLogo = 0; }, 1500);
-            }
-        }
-
-        function cerrarLogin() {
-            document.getElementById('admin-modal').style.display = 'none';
-        }
-
-        // --- Credenciales ---
-        document.getElementById('form-login').addEventListener('submit', function(e) {
-            e.preventDefault();
-            const user = document.getElementById('admin-user').value.trim();
-            const pass = document.getElementById('admin-pass').value.trim();
-
-            if (user === 'admin' && pass === 'dev1234') {
-                iniciarSesion('🛠️ Panel Developer / Admin');
-            } else if (user === 'shaii' && pass === 'shaii2026') {
-                iniciarSesion('✨ Panel de Control | OhMyShaii');
-            } else {
-                alert('Usuario o contraseña incorrectos');
-            }
-        });
-
-        function iniciarSesion(titulo) {
-            cerrarLogin();
-            document.getElementById('panel-titulo').innerText = titulo;
-            document.getElementById('panel-admin').style.display = 'block';
-            document.getElementById('galeria-grid').classList.add('modo-admin');
-            document.getElementById('form-login').reset();
-        }
-
-        function cerrarSesion() {
-            document.getElementById('panel-admin').style.display = 'none';
-            document.getElementById('galeria-grid').classList.remove('modo-admin');
-        }
-
-        // --- Subir Foto y Guardar en localStorage ---
-        document.getElementById('form-subir-foto').addEventListener('submit', function(e) {
-            e.preventDefault();
-            
-            const archivo = document.getElementById('input-foto').files[0];
-            const categoria = document.getElementById('select-categoria').value;
-            const descripcion = document.getElementById('input-descripcion').value;
-
-            if (archivo) {
-                const reader = new FileReader();
-                reader.onload = function(e) {
-                    const fotoObj = {
-                        id: Date.now(),
-                        src: e.target.result,
-                        categoria: categoria,
-                        descripcion: descripcion
-                    };
-
-                    // Guardar objeto en el array de localStorage
-                    const fotos = JSON.parse(localStorage.getItem('galeria_shaii')) || [];
-                    fotos.unshift(fotoObj);
-                    localStorage.setItem('galeria_shaii', JSON.stringify(fotos));
-
-                    // Renderizar en la galería en pantalla
-                    renderizarFoto(fotoObj.src, fotoObj.categoria, fotoObj.descripcion, fotoObj.id);
-
-                    alert('¡Foto publicada y guardada con éxito!');
-                    document.getElementById('form-subir-foto').reset();
-                };
-                reader.readAsDataURL(archivo);
-            }
-        });
-
-        function renderizarFoto(src, categoria, descripcion, id) {
-            const nuevaTarjeta = document.createElement('div');
-            nuevaTarjeta.className = `galeria-item ${categoria}`;
-            if (id) nuevaTarjeta.dataset.id = id;
-
-            nuevaTarjeta.innerHTML = `
-                <button class="btn-eliminar" onclick="eliminarFoto(this)">✖</button>
-                <img src="${src}" alt="${descripcion}" onclick="abrirLightbox(this.parentElement)">
-                <div class="overlay"><span>${categoria.charAt(0).toUpperCase() + categoria.slice(1)}</span></div>
-            `;
-
-            const galeria = document.getElementById('galeria-grid');
-            galeria.insertBefore(nuevaTarjeta, galeria.firstChild);
-        }
-
-        // --- Eliminar Foto del Dom y de localStorage ---
-        function eliminarFoto(boton) {
-            if (confirm('¿Estás seguro de que deseas eliminar esta imagen?')) {
-                const tarjeta = boton.parentElement;
-                const id = tarjeta.dataset.id;
-
-                if (id) {
-                    let fotos = JSON.parse(localStorage.getItem('galeria_shaii')) || [];
-                    fotos = fotos.filter(f => f.id != id);
-                    localStorage.setItem('galeria_shaii', JSON.stringify(fotos));
-                }
-
-                tarjeta.remove();
-            }
-        }
-
-        // --- Filtros y Lightbox ---
-        function filtrarAlbum(categoria, e) {
+        // Filtrar imágenes por tipo de álbum
+        function filtrarAlbum(categoria) {
             const botones = document.querySelectorAll('.tab-btn');
             const items = document.querySelectorAll('.galeria-item');
 
             botones.forEach(btn => btn.classList.remove('active'));
-            if (e) e.target.classList.add('active');
+            event.target.classList.add('active');
 
             items.forEach(item => {
                 if (categoria === 'todas' || item.classList.contains(categoria)) {
@@ -319,6 +126,7 @@
             });
         }
 
+        // Abrir visor de imagen a tamaño completo
         function abrirLightbox(elemento) {
             const modal = document.getElementById('lightbox');
             const imgAmpliada = document.getElementById('img-ampliada');
@@ -330,6 +138,7 @@
             captionText.innerHTML = imagenOriginal.alt;
         }
 
+        // Cerrar visor
         function cerrarLightbox() {
             document.getElementById('lightbox').style.display = 'none';
         }
